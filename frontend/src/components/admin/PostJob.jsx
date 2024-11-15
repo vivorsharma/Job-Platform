@@ -20,9 +20,9 @@ const PostJob = () => {
     description: "",
     requirements: "",
     salary: "",
-    locaion: "",
+    location: "",
     jobType: "",
-    experience: "",
+    experience: 0,
     position: 0,
     companyId: ""
   })
@@ -41,7 +41,7 @@ const PostJob = () => {
   }
 
   const submitHandler = (e) => {
-    e.preventdefault()
+    e.preventDefault()
     try {
       setLoading(true)
       const res = axios.post(`${JOB_API_END_POINT}/post`, input, {
@@ -50,13 +50,13 @@ const PostJob = () => {
         },
         withCredentials: true,
       })
-      if (res.data.success) {
+      if (res?.data?.success) {
         toast.success(res.data.message)
         navigate("/admin/jobs")
       }
     } catch (error) {
       console.log(error)
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false)
     }
@@ -111,11 +111,11 @@ const PostJob = () => {
               />
             </div>
             <div>
-              <Label>Locaion</Label>
+              <Label>Location</Label>
               <Input
                 type="text"
-                name="locaion"
-                value={input.locaion}
+                name="location"
+                value={input.location}
                 onChange={changeEventHandler}
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 my-1"
               />
@@ -133,7 +133,7 @@ const PostJob = () => {
             <div>
               <Label>Experience level</Label>
               <Input
-                type="text"
+                type="number"
                 name="experience"
                 value={input.experience}
                 onChange={changeEventHandler}
@@ -175,7 +175,7 @@ const PostJob = () => {
           </div>
 
           {
-            loading ? <Button className="w-full my-4"> <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait  </Button> : <Button type="submit" className="w-full my-4">Post New Job</Button>
+            loading ? <Button className="w-full my-4"> <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait  </Button> : <Button type="submit" className="w-full my-4" onClick={submitHandler}>Post New Job</Button>
           }
 
           {

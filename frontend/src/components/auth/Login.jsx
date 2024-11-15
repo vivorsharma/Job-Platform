@@ -9,7 +9,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { USER_API_END_POINT } from '../../helpers/constant'
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoading } from '@/redux/slice';
+import { setLoading, setUser } from '@/redux/slice';
 import store from '@/redux/store';
 import { Loader2 } from 'lucide-react';
 

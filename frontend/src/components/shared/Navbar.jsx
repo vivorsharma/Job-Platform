@@ -2,25 +2,26 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
 import React from 'react'
 import { Button } from '../ui/button'
-import {
-    Avatar,
-    AvatarImage,
-} from "@/components/ui/avatar"
+
 import { LogOut, User2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { USER_API_END_POINT } from '@/helpers/constant'
 import { toast } from 'sonner'
+import { Avatar, AvatarImage } from '../ui/avatar'
+import { setUser } from '@/redux/slice'
 
 
 
 const Navbar = () => {
     const user = useSelector((state) => state.auth.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const logOutHandler = async () => {
         try {
-            const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
+            const res = await axios.post(`${USER_API_END_POINT}/logout`, {}, { withCredentials: true });
             if (res.data.success) {
                 dispatch(setUser(null))
                 navigate("/")
@@ -28,7 +29,7 @@ const Navbar = () => {
             }
         } catch (error) {
             console.log(error)
-
+            toast.error("Failed to log out. Please try again.");
         }
     }
 
@@ -99,7 +100,7 @@ const Navbar = () => {
 
                                         <div className='flex w-fit items-center gap-2 cursor-pointer'>
                                             <LogOut />
-                                            <Button onClick={logOutHandler} variant="link">Logout</Button>
+                                            <Button onClick={(e) => {e.stopPropagation(); logOutHandler(); }} variant="link">Logout</Button>
                                         </div>
                                     </div>
                                 </PopoverContent>

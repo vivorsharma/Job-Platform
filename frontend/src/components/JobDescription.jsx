@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { setSingleJob } from '@/redux/jobSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { APPLICATION_API_END_POINT } from '@/helpers/constant';
+import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from '@/helpers/constant';
 import { toast } from 'sonner';
 
 const JobDescription = () => {
@@ -15,13 +15,14 @@ const JobDescription = () => {
     const { singleJob } = useSelector(store => store.job)
     const { user } = useSelector(store => store.auth)
 
-    const isInitiallyApplied = singleJob?.applications?.some(application => applicant === user?._id || false);
+    const isInitiallyApplied = singleJob?.applications?.some(application => application.applicant === user?._id || false);
     const [isApplied, setIsApplied] = useState(isInitiallyApplied)
     const dispatch = useDispatch();
 
+
     const applyJobHandler = async () => {
         try {
-            const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${jobId}`, { withCredentials: true });
+            const res = await axios.post(`${APPLICATION_API_END_POINT}/apply/${jobId}`, {}, { withCredentials: true });
             if (res.data.success) {
                 setIsApplied(true)
                 const updateSingleJob = { ...singleJob, applications: [...singleJob.applications, { applicant: user?._id }] }

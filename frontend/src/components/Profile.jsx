@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Navbar from './shared/Navbar'
-import { Avatar, AvatarImage } from '@radix-ui/react-avatar'
+import { Avatar, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Badge, Contact2, Mail, Pen } from 'lucide-react'
 import { Label } from './ui/label'
@@ -50,8 +50,11 @@ const Profile = () => {
                     <h1>Skills</h1>
                     <div className='flex items-center gap-1'>
                         {
-                            user?.profile?.skills.length != 0 ? user?.profile?.skills.map((item, index) => <Badge key={index}> {item} </Badge>) : <span>NA</span>
+                            user?.profile?.skills && Array.isArray(user.profile.skills) && user.profile.skills.length > 0
+                                ? user.profile.skills.map((item, index) => <Badge key={index}> {item} </Badge>)
+                                : <span>NA</span>
                         }
+
                     </div>
                 </div>
 
