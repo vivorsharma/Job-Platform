@@ -5,6 +5,7 @@ const applyJob = async (req, res) => {
     try {
         const userId = req.id;
         const jobId = req.params.id;
+        console.log("req", req.params.id)
 
         if (!jobId) {
             return res.status(401).json({ message: "not found" });

@@ -23,7 +23,7 @@ const registerCompany = async (req, res) => {
             userId: req.id
         });
 
-        return res.status(201).json({ message: "Company registered successfully", company });
+        return res.status(201).json({ message: "Company registered successfully", company, success: true });
 
     } catch (error) {
         console.error(error); // Log the error for debugging
@@ -40,7 +40,7 @@ const getCompany = async (req, res) => {
             return res.status(404).json({ message: "Company not found" });
         }
 
-        return res.status(200).json({ message: "Company found successfully", companies });
+        return res.status(200).json({ message: "Company found successfully", companies , success: true});
     } catch (error) {
         return res.status(500).json({ message: "Intrnal server error" });
     }
@@ -55,7 +55,7 @@ const getCompanyById = async (req, res) => {
             return res.status(404).json({ message: "Company not found" });
         }
 
-        return res.status(200).json({ message: "Company found successfully", company });
+        return res.status(200).json({ message: "Company found successfully", company, success: true });
 
     } catch (error) {
         return res.status(500).json({ message: "Intrnal server error" });
@@ -79,7 +79,7 @@ const updateCompany = async () => {
             return res.status(404).json({ message: "Company not found" });
         }
 
-        return res.status(200).json({ message: "Company updated successfully", company });
+        return res.status(200).json({ message: "Company updated successfully", company, success: true });
 
     } catch (error) {
         return res.status(500).json({ message: "Intrnal server error" });

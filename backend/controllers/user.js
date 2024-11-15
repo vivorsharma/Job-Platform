@@ -2,22 +2,30 @@ const User = require('../model/user');
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const getDataUri = require('../utils/dataUri');
-const cloudinary = require('../utils/cloudinary');
+const Cloudinary = require('../utils/cloudinary');
 
 const register = async (req, res) => {
     try {
+        // console.log("File received:", req.file);
+        // console.log("Cloudinary instance before upload:", Cloudinary); 
+
         const { fullName, email, phoneNumber, password, role } = req.body;
 
-        if (!fullName || !email || !phoneNumber || !password || !role) {
-            return res.status(400).json({ message: "something is missing" });
-        }
+        // if (!fullName || !email || !phoneNumber || !password || !role) {
+        //     return res.status(400).json({ message: "Something is missing" });
+        // }
 
-        const file = req.file;
-        const fileUri = getDataUri(file)
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        // if (!req.file) {
+        //     return res.status(400).json({ message: "Profile picture is required" });
+        // }
+
+        // const fileUri = getDataUri(req.file);
+        // console.log("File URI:", fileUri); 
+
+        // const cloudResponse = await Cloudinary.uploader.upload(fileUri.content);
+        // console.log("Cloudinary upload response:", cloudResponse); 
 
         const user = await User.findOne({ email });
-
         if (user) {
             return res.status(400).json({ message: "User already exists" });
         }
@@ -31,15 +39,19 @@ const register = async (req, res) => {
             password: hashedPassword,
             role,
             profile: {
-                profilePhoto: cloudResponse.secure_url,
+                // profilePhoto: cloudResponse.secure_url,
+                profilePhoto: "",
             }
-        })
+        });
 
-        return res.status(201).json({ message: "User created" });
+        return res.status(201).json({ success: true, message: "User created" });
     } catch (error) {
+        console.error("Error during registration:", error);
         return res.status(500).json({ message: "Internal server error", error });
     }
-}
+};
+
+
 
 const login = async (req, res) => {
     try {
@@ -100,7 +112,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        return res.status(200).cookie("token", "", { maxAge: 0 }).json({ message: "logged out", success: true })
+        return res.status(200).cookie("token", "", { maxAge: 0 }).json({ message: "logged out successfully", success: true })
     } catch (error) {
         return res.status(500).json({ message: "Internal server error", success: false });
     }
