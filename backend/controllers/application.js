@@ -3,34 +3,50 @@ const Job = require('../model/job');
 
 const applyJob = async (req, res) => {
     try {
-        const userId = req.id;
+        if (!req.user) {
+            return res.status(401).json({ message: "User is not authenticated" });
+        }
+        const userId = req.user._id;
         const jobId = req.params.id;
-        console.log("req", req.params.id)
 
-        if (!jobId) {
-            return res.status(401).json({ message: "not found" });
+        if (!userId || !jobId) {
+            return res.status(400).json({ message: "Missing required fields" });
         }
 
-        const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
+        const existingApplication = await Application.findOne({ job: jobId, application: userId });
 
-        if (!existingApplication) {
-            return res.status(401).json({ message: "already aplied" });
+        if (existingApplication) {
+            return res.status(400).json({ message: "Already applied" });
         }
+
 
         const newApplication = await Application.create({
             job: jobId,
-            applicant: userId
-        })
+            application: userId
+        });
+
+
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found' });
+        }
+
+        // Ensure `applications` is initialized as an array
+        if (!Array.isArray(job.applications)) {
+            job.applications = [];
+        }
+
 
         job.applications.push(newApplication._id);
         await job.save();
 
-        return res.status(201).json({ message: "applied successfully", });
+        return res.status(201).json({ success: true, message: "Applied successfully", job });
 
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        console.error('Error during job application process:', error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
-}
+};
 
 const getAppliedJobs = async (req, res) => {
     try {

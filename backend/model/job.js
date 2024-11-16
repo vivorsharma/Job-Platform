@@ -44,9 +44,11 @@ const jobSchema = new mongoose.Schema({
         // required: true,
     },
     applications: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Application'
-        // required: true,
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Applications'
+        }],
+        default: []
     },
 }, {
     timestamps: true,

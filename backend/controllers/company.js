@@ -6,27 +6,24 @@ const registerCompany = async (req, res) => {
     try {
         const { companyName } = req.body;
 
-        // Validate that the company name is provided
         if (!companyName) {
             return res.status(400).json({ message: "Company name is required" });
         }
 
-        // Check if the company already exists
         let company = await Company.findOne({ name: companyName });
         if (company) {
             return res.status(400).json({ message: "You can't register the same company again" });
         }
-        console.log("User ID:", req.id);
-        // Create a new company
+
         company = await Company.create({
             name: companyName,
-            userId: req.id
+            userId: req.user._id
         });
 
         return res.status(201).json({ message: "Company registered successfully", company, success: true });
 
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error(error);
         return res.status(500).json({ message: "Internal server error", error });
     }
 };
@@ -40,7 +37,7 @@ const getCompany = async (req, res) => {
             return res.status(404).json({ message: "Company not found" });
         }
 
-        return res.status(200).json({ message: "Company found successfully", companies , success: true});
+        return res.status(200).json({ message: "Company found successfully", companies, success: true });
     } catch (error) {
         return res.status(500).json({ message: "Intrnal server error" });
     }
