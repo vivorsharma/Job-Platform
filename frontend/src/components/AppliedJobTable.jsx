@@ -2,9 +2,10 @@ import React from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { Badge } from './ui/badge'
 import { useSelector } from 'react-redux'
+import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
 
 const AppliedJobTable = () => {
-
+    useGetAppliedJobs()
     const { allAppliedJobs } = useSelector(store => store.job);
 
     return (
