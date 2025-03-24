@@ -51,22 +51,53 @@ const applyJob = async (req, res) => {
 const getAppliedJobs = async (req, res) => {
     try {
         const userId = req.id;
+        console.log("User ID:", userId);  
 
-        const application = await Application.find({ applicant: userId }).sort({ createdAt: -1 })
+        // Query to find applications for the user
+        const application = await Application.find({ application: userId }).sort({ createdAt: -1 });
+        console.log("Fetched Applications:", application);  
+
+        if (application.length === 0) {
+            return res.status(404).json({ message: "No applications found", success: false });
+        }
+
+        // Log before populating the job and company
+        console.log("Before populating job and company fields...");
+
+        // Populate the job and company details
+        const populatedApplications = await Application.find({ application: userId })
+            .sort({ createdAt: -1 })
             .populate({
-                path: "job", options: { sort: { createdAt: -1 } },
+                path: "Job", options: { sort: { createdAt: -1 } },
                 populate: {
                     path: "company",
+                    model: "Company",
                     options: { sort: { createdAt: -1 } },
-                }
-            })
+                },
+                strictPopulate: false,
+            });
 
-        return res.status(200).json({ message: "data fetched successfully", application });
+        console.log("Populated Applications:", populatedApplications);  
+
+        if (populatedApplications.length === 0) {
+            return res.status(404).json({ message: "No populated applications found", success: false });
+        }
+
+        return res.status(200).json({
+            message: "Data fetched successfully",
+            success: true,
+            application: populatedApplications
+        });
 
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        console.error("Error fetching applications:", error);  
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false,
+        });
     }
-}
+};
+
 
 const getApplicants = async (req, res) => {
     try {
@@ -84,10 +115,10 @@ const getApplicants = async (req, res) => {
             return res.status(401).json({ message: "not found" });
         }
 
-        return res.status(200).json({ message: "data fetched successfully", job });
+        return res.status(200).json({ message: "data fetched successfully", success: true, job });
 
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error", success: false, });
     }
 }
 
@@ -109,10 +140,10 @@ const updateStatus = async (req, res) => {
         applications.status = status.toLowerCase();
         await applications.save();
 
-        return res.status(200).json({ message: "updated successfully", applications });
+        return res.status(200).json({ message: "updated successfully", success: true, applications });
 
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error", success: false, });
     }
 }
 
